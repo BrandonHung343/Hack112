@@ -4,6 +4,7 @@ import math, string, copy, time, random
     
 class gameObject(pygame.sprite.Sprite):
     def __init__(self,x,y,r,angle,screen):
+        super(gameObject, self).__init__()
         self.x = x
         self.y = y
         self.r = r
@@ -51,13 +52,16 @@ class CircleGreen(gameObject):
                         self.angle + -3*math.pi/4,
                         self.angle + -math.pi/4,10)
                         
-class Cursor(gameObject):
-    def __init__(self, screenWidth, screenHeight):
+class Cursor(pygame.sprite.Sprite):
+    def __init__(self, screenWidth, screenHeight, screen):
+        super(Cursor, self).__init__()
         self.x = screenWidth//2
         self.y = screenHeight - 20
         self.r = 10
         self.cursorSpeed = 5
         self.color = (255,255,153) #yellow
+        self.rect = (self.x-self.r, self.y-self.r, 2*self.r, 2*self.r)
+        self.mask = pygame.mask.from_surface(screen)
     
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, (self.x,self.y), self.r)
@@ -75,7 +79,6 @@ class Cursor(gameObject):
         if keysDown(pygame.K_DOWN):
             self.y += self.cursorSpeed
 
-"""
 class myProject(PygameGame):
     def init(self):
         
@@ -88,19 +91,22 @@ class myProject(PygameGame):
         self.circleList = []
         self.angleList = []
         
-        self.cursor = Cursor(self.width, self.height)
-        
         #layers
-        self.screenPurple = pygame.display.set_mode((self.width, self.height))
-        self.screenPink = pygame.display.set_mode((self.width, self.height))
-        self.screenYellow = pygame.display.set_mode((self.width, self.height))
-        self.screenGreen = pygame.display.set_mode((self.width, self.height))
+        self.screenPurple = pygame.Surface((self.width, self.height))
+        self.screenPink = pygame.Surface((self.width, self.height))
+        self.screenYellow = pygame.Surface((self.width, self.height))
+        self.screenGreen = pygame.Surface((self.width, self.height))
+        self.screenCursor = pygame.Surface((self.width, self.height))
         
         #groups
         self.purpleGrp = pygame.sprite.Group()
         self.pinkGrp = pygame.sprite.Group()
         self.yellowGrp = pygame.sprite.Group()        
         self.greenGrp = pygame.sprite.Group()
+        self.cursorGrp = pygame.sprite.Group()
+        
+        self.cursor = Cursor(self.width, self.height,self.screenCursor)
+        self.cursorGrp.add(self.cursor)
         
     def mousePressed(self, x, y):
         r = random.randint(40,50)
@@ -113,49 +119,49 @@ class myProject(PygameGame):
             
         self.cursor.update(self.isKeyPressed)
         
-        # if self.cursor.color == self.purple:
-        #     for pinkArc in self.pinkGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, pinkArc) != None:
-        #             print ("COLLIDED WITH PINK")
-        #     for yellowArc in self.yellowGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, yellowArc) != None:
-        #             print ("COLLIDED WITH YELLOW")
-        #     for greenArc in self.greenGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, greenArc) != None:
-        #             print ("COLLIDED WITH GREEN")
-        # 
-        # elif self.cursor.color == self.pink:
-        #     for purpleArc in self.purpleGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, purpleArc) != None:
-        #             print ("COLLIDED WITH PURPLE")
-        #     for yellowArc in self.yellowGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, yellowArc) != None:
-        #             print ("COLLIDED WITH YELLOW")
-        #     for greenArc in self.greenGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, greenArc) != None:
-        #             print ("COLLIDED WITH GREEN")
-        # 
-        # elif self.cursor.color == self.yellow:
-        #     for purpleArc in self.purpleGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, purpleArc) != None:
-        #             print ("COLLIDED WITH PURPLE")
-        #     for pinkArc in self.pinkGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, pinkArc) != None:
-        #             print ("COLLIDED WITH PINK")
-        #     for greenArc in self.greenGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, greenArc) != None:
-        #             print ("COLLIDED WITH GREEN")
-        #             
-        # elif self.cursor.color == self.green:
-        #     for purpleArc in self.purpleGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, purpleArc) != None:
-        #             print ("COLLIDED WITH PURPLE")
-        #     for yellowArc in self.yellowGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, yellowArc) != None:
-        #             print ("COLLIDED WITH YELLOW")
-        #     for pinkArc in self.pinkGrp:
-        #         if pygame.sprite.collide_mask(self.cursor, pinkArc) != None:
-        #             print ("COLLIDED WITH PINK")
+        if self.cursor.color == self.purple:
+            for pinkArc in self.pinkGrp:
+                if pygame.sprite.collide_mask(self.cursor, pinkArc) != None:
+                    print ("COLLIDED WITH PINK")
+            for yellowArc in self.yellowGrp:
+                if pygame.sprite.collide_mask(self.cursor, yellowArc) != None:
+                    print ("COLLIDED WITH YELLOW")
+            for greenArc in self.greenGrp:
+                if pygame.sprite.collide_mask(self.cursor, greenArc) != None:
+                    print ("COLLIDED WITH GREEN")
+        
+        elif self.cursor.color == self.pink:
+            for purpleArc in self.purpleGrp:
+                if pygame.sprite.collide_mask(self.cursor, purpleArc) != None:
+                    print ("COLLIDED WITH PURPLE")
+            for yellowArc in self.yellowGrp:
+                if pygame.sprite.collide_mask(self.cursor, yellowArc) != None:
+                    print ("COLLIDED WITH YELLOW")
+            for greenArc in self.greenGrp:
+                if pygame.sprite.collide_mask(self.cursor, greenArc) != None:
+                    print ("COLLIDED WITH GREEN")
+        
+        elif self.cursor.color == self.yellow:
+            for purpleArc in self.purpleGrp:
+                if pygame.sprite.collide_mask(self.cursor, purpleArc) != None:
+                    print ("COLLIDED WITH PURPLE")
+            for pinkArc in self.pinkGrp:
+                if pygame.sprite.collide_mask(self.cursor, pinkArc) != None:
+                    print ("COLLIDED WITH PINK")
+            for greenArc in self.greenGrp:
+                if pygame.sprite.collide_mask(self.cursor, greenArc) != None:
+                    print ("COLLIDED WITH GREEN")
+                    
+        elif self.cursor.color == self.green:
+            for purpleArc in self.purpleGrp:
+                if pygame.sprite.collide_mask(self.cursor, purpleArc) != None:
+                    print ("COLLIDED WITH PURPLE")
+            for yellowArc in self.yellowGrp:
+                if pygame.sprite.collide_mask(self.cursor, yellowArc) != None:
+                    print ("COLLIDED WITH YELLOW")
+            for pinkArc in self.pinkGrp:
+                if pygame.sprite.collide_mask(self.cursor, pinkArc) != None:
+                    print ("COLLIDED WITH PINK")
         
     def redrawAll(self, screen):
         for i in range (len(self.circleList)):
@@ -182,50 +188,10 @@ class myProject(PygameGame):
             screen.blit(self.screenYellow,(0,0))
             screen.blit(self.screenGreen, (0,0))
         
-        self.cursor.draw(screen) """
-
-class myProject(PygameGame):
-    def init(self):
-        
-        self.purple = (153,153,255)
-        
-        #circle
-        self.circleList = []
-        self.angleList = []
-        
-        self.cursor = Cursor(self.width, self.height)
-        
-        #layers
-        self.screenPurple = pygame.display.set_mode((self.width, self.height))
-        
-        #groups
-        self.purpleGrp = pygame.sprite.Group()
-        
-    def mousePressed(self, x, y):
-        r = random.randint(40,50)
-        self.circleList.append((x,y,r))
-        self.angleList.append(0)
-    
-    def timerFired(self, dt):
-        for i in range (len(self.angleList)):
-            self.angleList[i] += 0.05
-            
-        self.cursor.update(self.isKeyPressed)
-        
-    def redrawAll(self, screen):
-        for i in range (len(self.circleList)):
-            x, y, r = self.circleList[i]
-            angle = self.angleList[i]
-            
-            circlePurple = CirclePurple(x,y,r, angle, self.screenPurple)
-            
-            self.purpleGrp.add(circlePurple)
-            
-            circlePurple.draw()
-            
-            screen.blit(self.screenPurple, (0,0))
-        
         self.cursor.draw(screen)
+        screen.blit(self.screenCursor, (0,0))
+        
+        
     
 #creating and running the game
 game = myProject()
